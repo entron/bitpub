@@ -7,7 +7,7 @@ First of all, public information and the right to publish information should bel
 
 Second, it is more difficult to lose important information or access to information due to server breaking down as the information is likely to have multiple copies arround the world served simutaneously.
 
-Third, there are many other advantage with proper p2p implementation. For exmaple, on bitpub the information is retrived by its ID (hash of the information) and not by URL, so it does not have the common problem that URLs often change and fail to work after some time. Another example is through many type of relation between pieces of information like "comment", "reference" etc, it forms a netwrok of [hash chain](http://en.wikipedia.org/wiki/Hash_chain) which can be used as [Trusted timestamping](http://en.wikipedia.org/wiki/Trusted_timestamping).
+Third, there are many other advantage with proper p2p implementation. For exmaple, on bitpub the information is retrived by its ID (hash of the information) and not by URL, so it does not have the common problem that URLs often change and fail to work after some time. Another example is through many types of relation between pieces of information published like "comment", "reference" etc, it forms a netwrok of [hash chain](http://en.wikipedia.org/wiki/Hash_chain) which can be used as [Trusted timestamping](http://en.wikipedia.org/wiki/Trusted_timestamping).
 
 
 Pleas see the [project wiki](https://github.com/entron/bitpub/wiki) for more information.
