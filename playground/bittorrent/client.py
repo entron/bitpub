@@ -6,10 +6,10 @@ import hashlib
 f = open('ubuntu_info_dict.dat', 'rb')
 d = f.read()
 f.close()
-info_hash = hashlib.sha1(d).hexdigest()
+info_hash = hashlib.sha1(d).digest()
 
 
-peer_id = 'BP-12345678901234567'
+peer_id = '-BP0001-901234567890'
 
 anounce_url = 'http://torrent.ubuntu.com:6969/announce'
 
