@@ -2,6 +2,8 @@
 
 import requests
 import hashlib
+import bencode
+import binascii
 
 f = open('ubuntu_info_dict.dat', 'rb')
 d = f.read()
@@ -17,3 +19,54 @@ payload = {'info_hash': info_hash, 'peer_id': peer_id, 'left': '925892608', 'por
            'uploaded':'0', 'downloaded':'0', 'compact': '0', 'no_peer_id':'0', 'event':'started'}
 r = requests.get(anounce_url, params=payload)
 
+tracker_response = bencode.bdecode(r.content)
+
+peers = tracker_response['peers']
+
+ip_field0 = int(binascii.b2a_hex(peers[0]),16)
+ip_field1 = int(binascii.b2a_hex(peers[1]),16)
+ip_field2 = int(binascii.b2a_hex(peers[2]),16)
+ip_field3 = int(binascii.b2a_hex(peers[3]),16)
+ip = '.'.join([str(ip_field0), str(ip_field1) , str(ip_field2), str(ip_field3)])
+
+port = int(binascii.b2a_hex(peers[4:6]),16)
+
+class BTClient(protocol.Protocol):
+    """A simple BT client"""
+    
+    def connectionMade(self):
+        print('Connection made.')
+    
+    def dataReceived(self, data):
+        print "Server said:", data
+        self.transport.loseConnection()
+    
+    def connectionLost(self, reason):
+        print "connection lost"
+
+class BTFactory(protocol.ClientFactory):
+    protocol = BTClient
+
+    def clientConnectionFailed(self, connector, reason):
+        print "Connection failed - goodbye!"
+        reactor.stop()
+    
+    def clientConnectionLost(self, connector, reason):
+        print "Connection lost - goodbye!"
+        reactor.stop()
+
+
+
+
+#Handshake
+pstrlen = 19
+pstr = "BitTorrent protocol"
+
+byte_stream = io.BytesIO()
+byte_stream.write(bytes(pstrlen))
+byte_stream.write(bytes(pstr))
+
+
+f = BTFactory()
+reactor.connectTCP(ip, port, f)
+reactor.run()
