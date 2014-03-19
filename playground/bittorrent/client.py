@@ -4,6 +4,8 @@ import requests
 import hashlib
 import bencode
 import binascii
+from twisted.internet import reactor, protocol
+import io
 
 f = open('ubuntu_info_dict.dat', 'rb')
 d = f.read()
@@ -36,6 +38,7 @@ class BTClient(protocol.Protocol):
     
     def connectionMade(self):
         print('Connection made.')
+        self.transport.write(handshake())
     
     def dataReceived(self, data):
         print "Server said:", data
@@ -56,15 +59,20 @@ class BTFactory(protocol.ClientFactory):
         reactor.stop()
 
 
+def handshake():
+    pstrlen = '\x13' #Number 19
+    pstr = 'BitTorrent protocol'
+    reserved = '\0\0\0\0\0\0\0\0'
+    
+    byte_stream = io.BytesIO()
+    byte_stream.write(pstrlen)
+    byte_stream.write(pstr)
+    byte_stream.write(reserved)
+    byte_stream.write(info_hash)
+    byte_stream.write(peer_id)
+    
+    return byte_stream.getvalue()
 
-
-#Handshake
-pstrlen = 19
-pstr = "BitTorrent protocol"
-
-byte_stream = io.BytesIO()
-byte_stream.write(bytes(pstrlen))
-byte_stream.write(bytes(pstr))
 
 
 f = BTFactory()
