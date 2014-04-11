@@ -2,7 +2,7 @@
 
 import requests
 import hashlib
-import bencode
+import BitTorrent.bencode as bencode
 import binascii
 from twisted.internet import reactor, protocol
 import io
