@@ -34,6 +34,10 @@ ip = '.'.join([str(ip_field0), str(ip_field1) , str(ip_field2), str(ip_field3)])
 
 port = int(binascii.b2a_hex(peers[4:6]),16)
 
+def parseHandshake(data):
+    byte_stream = io.BytesIO()    
+
+
 class BTClient(protocol.Protocol):
     """A simple BT client"""
     
@@ -43,7 +47,7 @@ class BTClient(protocol.Protocol):
     
     def dataReceived(self, data):
         print "Server said:", data
-        self.transport.loseConnection()
+        print len(data)
     
     def connectionLost(self, reason):
         print "connection lost"
