@@ -7,6 +7,7 @@ import bencode
 import binascii
 from twisted.internet import reactor, protocol
 import io
+import struct 
 
 f = open('ubuntu_info_dict.dat', 'rb')
 d = f.read()
@@ -26,13 +27,10 @@ tracker_response = bencode.bdecode(r.content)
 
 peers = tracker_response['peers']
 
-ip_field0 = int(binascii.b2a_hex(peers[0]),16)
-ip_field1 = int(binascii.b2a_hex(peers[1]),16)
-ip_field2 = int(binascii.b2a_hex(peers[2]),16)
-ip_field3 = int(binascii.b2a_hex(peers[3]),16)
-ip = '.'.join([str(ip_field0), str(ip_field1) , str(ip_field2), str(ip_field3)])
-
-port = int(binascii.b2a_hex(peers[4:6]),16)
+ip = '.'.join([str(x) for x in struct.unpack('BBBB',peers[0:4])])
+port = struct.unpack('!H',peers[4:6])[0]
+print ip
+print port
 
 def parseHandshake(data):
     byte_stream = io.BytesIO()    
@@ -64,19 +62,26 @@ class BTFactory(protocol.ClientFactory):
         reactor.stop()
 
 
+#def handshake():
+    #pstrlen = '\x13' #Number 19
+    #pstr = 'BitTorrent protocol'
+    #reserved = '\0\0\0\0\0\0\0\0'
+    
+    #byte_stream = io.BytesIO()
+    #byte_stream.write(pstrlen)
+    #byte_stream.write(pstr)
+    #byte_stream.write(reserved)
+    #byte_stream.write(info_hash)
+    #byte_stream.write(peer_id)
+    
+    #return byte_stream.getvalue()
+
 def handshake():
-    pstrlen = '\x13' #Number 19
+    pstrlen = 19
     pstr = 'BitTorrent protocol'
-    reserved = '\0\0\0\0\0\0\0\0'
+    reserved = 0
     
-    byte_stream = io.BytesIO()
-    byte_stream.write(pstrlen)
-    byte_stream.write(pstr)
-    byte_stream.write(reserved)
-    byte_stream.write(info_hash)
-    byte_stream.write(peer_id)
-    
-    return byte_stream.getvalue()
+    struct.pack('=B19sq20s20s', pstrlen, pstr, reserved, info_hash, peer_id)
 
 
 
